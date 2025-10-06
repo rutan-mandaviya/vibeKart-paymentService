@@ -12,10 +12,11 @@ const razorpay = new Razorpay({
 
 // Create Payment
 async function createPayment(req, res) {
+    const orderId = req.params.orderId;
     const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1];
 
     try {
-        const orderId = req.params.orderId;
+        // const orderId = req.params.orderId;
 
         const orderResponse = await axios.get(`https://vibekart-orderservice.onrender.com/api/orders/${orderId}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -106,6 +107,13 @@ async function verifyPayment(req, res) {
             amount: payment.price.amount,
             currency: payment.price.currency
         });
+      await orderModel.findByIdAndUpdate(payment.order, { status: 'CONFIRMED' });
+      await publishToQueue("order_service_payment_completed", {
+    order: payment.order,
+    status: "CONFIRMED"
+});
+
+
 
         await publishToQueue("seller_dashboard_Payment_order_completed", payment);
 
