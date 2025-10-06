@@ -107,7 +107,7 @@ async function verifyPayment(req, res) {
             amount: payment.price.amount,
             currency: payment.price.currency
         });
-      await orderModel.findByIdAndUpdate(payment.order, { status: 'CONFIRMED' });
+     
       await publishToQueue("order_service_payment_completed", {
     order: payment.order,
     status: "CONFIRMED"
