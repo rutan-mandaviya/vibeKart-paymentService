@@ -112,6 +112,10 @@ async function verifyPayment(req, res) {
     order: payment.order,
     status: "CONFIRMED"
 });
+      await publishToQueue("order_service_Confirmed", {
+    order: payment.order,
+    status: "CONFIRMED"
+});
 
 
 
